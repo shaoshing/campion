@@ -1,3 +1,4 @@
+{
   "scripts": {
     "app": "babel-node app.js"
   },
@@ -7,10 +8,10 @@
     "bluebird": "^3.3.5",
     "cheerio": "^0.20.0",
     "datejs": "^1.0.0-rc3",
-    "express": "^4.13.4",
+    "express": "^4.14.0",
     "request": "^2.72.0"
   },
   "engines": {
-    "node": "5.0.0"
+    "node": "6.3.1"
   }
 }
