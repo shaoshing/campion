@@ -24,6 +24,6 @@ app.get("/campsites/search", (req, res) => {
         .then((results) => res.json(results));
 });
 
-app.listen(9001, () => {
+app.listen(process.env.PORT || 9001, () => {
     console.log("[server] listening on port 9001");
 });
