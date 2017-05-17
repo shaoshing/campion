@@ -24,9 +24,13 @@ Usage:
 /search?campsiteIDs=1,2,3&start=05/20/2017&weeks=4
     search different campsites (specified by campsite IDs) between today and the next 4 weeks
     `.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;"));
-})
+});
 
 app.get("/search", (req, res) => {
+    if (req.query.token !== "shao") {
+        res.send("Sorry, you are denied. Contact shaoshing@me.com");
+    }
+
     res.header("Access-Control-Allow-Origin", "*");
 
     let campsiteIDs = (req.query.campsiteIDs || YOSEMITE_CAMPSITE_IDS).split(","),
