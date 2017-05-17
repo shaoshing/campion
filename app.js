@@ -46,7 +46,8 @@ app.get("/search", (req, res) => {
                 campsites
             };
 
-            res.json(results);
+            res.header("Content-Type",'application/json');
+            res.send(JSON.stringify(results, null, "    "));
         });
 });
 
