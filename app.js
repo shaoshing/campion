@@ -13,16 +13,16 @@ app.get("/", (req, res) => {
 Usage:
 
 /search
-    search Yosemite campsites between today and the next four weeks
+    search Yosemite (default) campsites between today (default) and the next 2 weeks (default)
 
-/search?start=05/20/2017&days=2
-    search Yosemite campsites between the specified date and the next 2 days
+/search?start=05/20/2017&weeks=2
+    search Yosemite campsites between the specified date and the next 1 weeks
 
 /search?campsiteIDs=1,2,3
     search different campsites (specified by campsite IDs) between today and the next four weeks
 
-/search?campsiteIDs=1,2,3&start=05/20/2017&days=6
-    search different campsites (specified by campsite IDs) between today and the next 6 days
+/search?campsiteIDs=1,2,3&start=05/20/2017&weeks=4
+    search different campsites (specified by campsite IDs) between today and the next 4 weeks
     `.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;"));
 })
 
@@ -31,12 +31,19 @@ app.get("/search", (req, res) => {
 
     let campsiteIDs = (req.query.campsiteIDs || YOSEMITE_CAMPSITE_IDS).split(","),
         startDate = new Date(req.query.startDate || Date.now()),
-        endDate = new Date(startDate).addDays(req.query.days || 28);
-
-    console.info(`Search campsites ${campsiteIDs}, between ${startDate} and ${endDate}`);
+        endDate = new Date(startDate).addDays(Math.min(parseInt(req.query.weeks || 2), 4)*7);
 
     campsites.searchCampsites(campsiteIDs, startDate, endDate)
-        .then((results) => res.json(results));
+        .then((campsites) => {
+            let results = {
+                campsiteIDs,
+                startDate: startDate,
+                endDate: endDate,
+                campsites
+            };
+
+            res.json(results);
+        });
 });
 
 app.listen(process.env.PORT || 9001, () => {
