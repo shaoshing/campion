@@ -5,6 +5,8 @@ let Promise = require('bluebird'),
 
 require('datejs');
 
+const WEEK_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 function _searchCampsiteURL(url, cookiesJar = request.jar(), results = []) {
     return request({url: url, jar: cookiesJar})
         .then((response) => {
@@ -26,10 +28,11 @@ function _searchCampsiteURL(url, cookiesJar = request.jar(), results = []) {
                 availables.each((index, element) => {
                     let reservationURL = 'http://www.recreation.gov' + result(element).attr('href'),
                         dateStr = reservationURL.match(/\d+\/\d+\/\d+/)[0],
-                        date = new Date(dateStr);
+                        date = new Date(dateStr),
+                        weekName = WEEK_NAMES[date.getDay()];
 
                     console.info(`[_searchCampsiteURL] found ${date}`);
-                    results.push({ reservationURL, dateStr });
+                    results.push({ reservationURL, date: `${date.toLocaleDateString()} ${weekName}` });
                 });
             });
 

@@ -12,18 +12,24 @@ app.get("/", (req, res) => {
     res.send(`
 Usage:
 
-/search
+<a href="/search">/search</a>
     search Yosemite (default) campsites between today (default) and the next 2 weeks (default)
 
-/search?start=05/20/2017&weeks=2
+<a href="/search?start=05/20/2017&weeks=2">/search?start=05/20/2017&weeks=2</a>
     search Yosemite campsites between the specified date and the next 1 weeks
 
-/search?campsiteIDs=1,2,3
+<a href="/search?campsiteIDs=70927">/search?campsiteIDs=70927</a>
     search different campsites (specified by campsite IDs) between today and the next four weeks
 
-/search?campsiteIDs=1,2,3&start=05/20/2017&weeks=4
+<a href="/search?campsiteIDs=70927&start=05/20/2017&weeks=4">/search?campsiteIDs=70927&start=05/20/2017&weeks=4</a>
     search different campsites (specified by campsite IDs) between today and the next 4 weeks
-    `.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;"));
+
+Campsites:
+
+Yosemite NORTH PINES: 70927
+Yosemite UPPER PINES: 70925
+Yosemite LOWER PINES: 70928
+    `.replace(/\n/g, "<br/>"));
 });
 
 app.get("/search", (req, res) => {
@@ -34,15 +40,15 @@ app.get("/search", (req, res) => {
     res.header("Access-Control-Allow-Origin", "*");
 
     let campsiteIDs = (req.query.campsiteIDs || YOSEMITE_CAMPSITE_IDS).split(","),
-        startDate = new Date(req.query.startDate || Date.now()),
+        startDate = new Date(req.query.start || Date.now()),
         endDate = new Date(startDate).addDays(Math.min(parseInt(req.query.weeks || 2), 4)*7);
 
     campsites.searchCampsites(campsiteIDs, startDate, endDate)
         .then((campsites) => {
             let results = {
                 campsiteIDs,
-                startDate: startDate,
-                endDate: endDate,
+                startDate: startDate.toLocaleDateString(),
+                endDate: endDate.toLocaleDateString(),
                 campsites
             };
 
