@@ -32,7 +32,11 @@ function _searchCampsiteURL(url, cookiesJar = request.jar(), results = []) {
                         weekName = WEEK_NAMES[date.getDay()];
 
                     console.info(`[_searchCampsiteURL] found ${date}`);
-                    results.push({ reservationURL, date: `${date.toLocaleDateString()} ${weekName}` });
+                    results.push({
+                        reservationURL,
+                        date,
+                        dateStr: `${date.toLocaleDateString()} ${weekName}`
+                    });
                 });
             });
 
@@ -54,11 +58,11 @@ function _searchCampsite(campsiteID, startDate, endDate, availables = []) {
 
     return _searchCampsiteURL(url)
         .then((results) => {
-            availables.push(...results);
+            availables.push(...results.filter(r => !r.date.isAfter(endDate) ));
 
             let nextStartDate = new Date(startDate).addDays(14);
 
-            if (nextStartDate.isBefore(endDate)) {
+            if (!nextStartDate.isAfter(endDate)) {
                 return _searchCampsite(campsiteID, nextStartDate, endDate, availables);
             } else {
                 return availables;

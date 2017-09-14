@@ -5,23 +5,32 @@ require('datejs');
 
 let app = express();
 
-// NORTH PINES, UPPER PINES, LOWER PINES
-const YOSEMITE_CAMPSITE_IDS = "70927,70925,70928"
+const CAMPSITES = {
+    "70927": "Yosemite NORTH PINES",
+    "70925": "Yosemite UPPER PINES",
+    "70928": "Yosemite LOWER PINES"
+};
+
+const CAMPSITE_IDS = Array.from(Object.keys(CAMPSITES));
 
 app.get("/", (req, res) => {
     res.send(`
 Usage:
 
 <a href="/search">/search</a>
-    search Yosemite (default) campsites between today (default) and the next 2 weeks (default)
+    search Yosemite (default) campsites avaialble today.
 
-<a href="/search?start=05/20/2017&weeks=2">/search?start=05/20/2017&weeks=2</a>
-    search Yosemite campsites between the specified date and the next 1 weeks
+<a href="/search?date=05/20/2017">/search?date=05/20/2017</a>
+    search Yosemite campsites avaialble in May 20, 2017.
+
+<a href="/search?date=05/20/2017&days=7">/search?date=05/20/2017&days=7</a>
+<a href="/search?date=05/20/2017&weeks=1">/search?date=05/20/2017&weeks=1</a>
+    search Yosemite campsites available between the specified date and the next 1 week
 
 <a href="/search?campsiteIDs=70927">/search?campsiteIDs=70927</a>
-    search different campsites (specified by campsite IDs) between today and the next four weeks
+    search different campsites (specified by campsite IDs) avaialble today.
 
-<a href="/search?campsiteIDs=70927&start=05/20/2017&weeks=4">/search?campsiteIDs=70927&start=05/20/2017&weeks=4</a>
+<a href="/search?campsiteIDs=70927&date=05/20/2017&weeks=4">/search?campsiteIDs=70927&start=05/20/2017&weeks=4</a>
     search different campsites (specified by campsite IDs) between today and the next 4 weeks
 
 Campsites:
@@ -39,14 +48,19 @@ app.get("/search", (req, res) => {
 
     res.header("Access-Control-Allow-Origin", "*");
 
-    let campsiteIDs = (req.query.campsiteIDs || YOSEMITE_CAMPSITE_IDS).split(","),
-        startDate = new Date(req.query.start || Date.now()),
-        endDate = new Date(startDate).addDays(Math.min(parseInt(req.query.weeks || 2), 4)*7);
+    let campsiteIDs = req.query.campsiteIDs ? req.query.campsiteIDs.split(",") : CAMPSITE_IDS;
+        startDate = new Date(req.query.date || Date.now());
+
+    let days = req.query.weeks ? parseInt(req.query.weeks) * 7 : (req.query.days ? parseInt(req.query.days) : 0)
+        endDate = new Date(startDate).addDays(days);
 
     campsites.searchCampsites(campsiteIDs, startDate, endDate)
         .then((campsites) => {
+            campsites.forEach(r => {
+                r.campsite = CAMPSITES[r.campsiteID];
+            });
+
             let results = {
-                campsiteIDs,
                 startDate: startDate.toLocaleDateString(),
                 endDate: endDate.toLocaleDateString(),
                 campsites
