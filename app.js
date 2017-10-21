@@ -1,6 +1,8 @@
 
 let express = require("express");
 let campsites = require("./campsites");
+let crypto = require('crypto');
+
 require('datejs');
 
 let app = express();
@@ -12,6 +14,10 @@ const CAMPSITES = {
 };
 
 const CAMPSITE_IDS = Array.from(Object.keys(CAMPSITES));
+
+function md5 (str) {
+    return crypto.createHash('md5').update(str).digest('hex');
+}
 
 app.get("/", (req, res) => {
     res.send(`
@@ -57,7 +63,7 @@ app.get("/search", (req, res) => {
     campsites.searchCampsites(campsiteIDs, startDate, endDate)
         .then((campsites) => {
             campsites.forEach(r => {
-                r.campsite = CAMPSITES[r.campsiteID];
+                r.campsite = CAMPSITES[r.campsiteID] || r.campsiteID;
             });
 
             let results = {
@@ -65,6 +71,8 @@ app.get("/search", (req, res) => {
                 endDate: endDate.toLocaleDateString(),
                 campsites
             };
+
+            results.id = md5(JSON.stringify(results));
 
             res.header("Content-Type",'application/json');
             res.send(JSON.stringify(results, null, "    "));
