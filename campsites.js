@@ -58,7 +58,7 @@ function _searchCampsite(campsiteID, startDate, endDate, availables = []) {
 
     return _searchCampsiteURL(url)
         .then((results) => {
-            availables.push(...results.filter(r => !r.date.isAfter(endDate) ));
+            availables.push(...results.filter(r => !r.date.isAfter(endDate) && !r.date.equals(endDate) ));
 
             let nextStartDate = new Date(startDate).addDays(14);
 
