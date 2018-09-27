@@ -44,7 +44,7 @@ async function _searchCampsiteURL(url, cookiesJar = request.jar(), results = [])
     }
 }
 
-async function _searchCampsite(campsiteID, startDate, endDate, availables = [], otherDates = []) {
+async function _searchCampsite(campsiteID, startDate, endDate, availables = [], otherDates = new Set()) {
     let startDateStr = startDate.format("%m/%d/%Y"),
         url = `http://www.recreation.gov/campsiteCalendar.do?page=calendar&contractCode=NRSO&parkId=${campsiteID}&calarvdate=${startDateStr}&sitepage=true`;
 
@@ -57,7 +57,7 @@ async function _searchCampsite(campsiteID, startDate, endDate, availables = [], 
 
         if (wrongDate) {
             console.info(`[_searchCampsite] skip ${r.date} (wrong date)`);
-            otherDates.push(r.date.format("m/d/Y"));
+            otherDates.add(r.date.format("m/d/Y"));
         }
 
         return !wrongDate;
@@ -76,7 +76,7 @@ exports.searchCampsites = function (campsiteIDs, startDate, endDate) {
     let promises = campsiteIDs.map((campsiteID) => {
         return _searchCampsite(campsiteID, startDate, endDate)
             .then(({availables, otherDates}) => {
-                return { campsiteID, availables, otherDates };
+                return { campsiteID, availables, otherDates: Array.from(otherDates) };
             });
     });
 
