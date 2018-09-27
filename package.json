@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "app": "babel-node app.js"
+    "app": "babel-node app.js",
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +13,9 @@
     "request": "^2.72.0"
   },
   "engines": {
-    "node": "8.5.0"
+    "node": "8.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
   }
 }

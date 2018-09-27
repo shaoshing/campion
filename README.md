@@ -5,6 +5,6 @@ CAMPION
 
 
 ```
-npm install
-node park.js
+yarn install
+yarn start
 ```

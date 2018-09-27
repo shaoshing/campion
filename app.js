@@ -57,7 +57,7 @@ app.get("/search", (req, res) => {
     let campsiteIDs = req.query.campsiteIDs ? req.query.campsiteIDs.split(",") : CAMPSITE_IDS;
         startDate = new Date(req.query.date || Date.now());
 
-    let days = req.query.weeks ? parseInt(req.query.weeks) * 7 : (req.query.days ? parseInt(req.query.days) : 0)
+    let days = req.query.weeks ? parseInt(req.query.weeks) * 7 : (req.query.days ? parseInt(req.query.days) : 1)
         endDate = new Date(startDate).addDays(days);
 
     campsites.searchCampsites(campsiteIDs, startDate, endDate)
