@@ -76,7 +76,7 @@ exports.searchCampsites = function (campsiteIDs, startDate, endDate) {
     let promises = campsiteIDs.map((campsiteID) => {
         return _searchCampsite(campsiteID, startDate, endDate)
             .then(({availables, otherDates}) => {
-                return { campsiteID, availables, otherDates: Array.from(otherDates) };
+                return { campsiteID, availables, otherDates };
             });
     });
 
